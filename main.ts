@@ -4,8 +4,54 @@
  * 由「序列」積木（序列 重新導向到 TX/RX）設定的腳位送出。
  */
 
+enum DroneCommand {
+    //% block="解鎖"
+    Unlock,
+    //% block="切換尾燈"
+    TailLight,
+    //% block="切換機身燈"
+    BodyLight,
+    //% block="停止馬達 (降落後才能用)"
+    StopMotor,
+    //% block="啟動馬達"
+    StartMotor,
+    //% block="懸停"
+    Hover,
+    //% block="增加油門"
+    ThrottleUp,
+    //% block="減少油門"
+    ThrottleDown,
+    //% block="向左側滾"
+    RollLeft,
+    //% block="向右側滾"
+    RollRight
+}
+
 //% weight=100 color=#0079B9 icon="" block="飛控"
 namespace drone {
+    /**
+     * 回傳選定動作對應的指令字串
+     * @param cmd 動作
+     */
+    //% blockId=drone_command_string
+    //% block="飛控指令 %cmd"
+    //% weight=80
+    export function commandString(cmd: DroneCommand): string {
+        switch (cmd) {
+            case DroneCommand.Unlock: return "LEDFFFA000000000000#"
+            case DroneCommand.TailLight: return "LED0000FFFA00000000#"
+            case DroneCommand.BodyLight: return "LED00000000FFFA0000#"
+            case DroneCommand.StopMotor: return "LED000000000000FFFA#"
+            case DroneCommand.StartMotor: return "SRT1500200020001500#"
+            case DroneCommand.Hover: return "SRT1500150015001500#"
+            case DroneCommand.ThrottleUp: return "SRT1500150017001500#"
+            case DroneCommand.ThrottleDown: return "SRT1500150013001500#"
+            case DroneCommand.RollLeft: return "SRT1500150015001300#"
+            case DroneCommand.RollRight: return "SRT1500150015001700#"
+        }
+        return ""
+    }
+
     // 對應原 Arduino 程式的 tcpReciveData[0..3] 與 ctrbuff[0..3]，狀態會保留
     let tcpReciveData: number[] = [0, 0, 0, 0]
     let ctrbuff: number[] = [0, 0, 0, 0]
@@ -118,7 +164,7 @@ namespace drone {
      */
     //% blockId=drone_url_decode
     //% block="URL 解碼 %s"
-    //% s.defl=""
+    //% s.defl="SRT1500150015001500%23"
     export function urlDecode(s: string): string {
         let out = ""
         let i = 0
