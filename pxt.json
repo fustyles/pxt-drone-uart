@@ -1,6 +1,6 @@
 {
     "name": "drone-uart",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "將指令字串轉成飛控 UART 二進位封包並由 GPIO 送出",
     "dependencies": {
         "core": "*"
