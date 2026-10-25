@@ -55,16 +55,35 @@ enum DroneAxis {
     RollRight
 }
 
-//% weight=100 color=#0079B9 icon="" block="飛控"
+//% weight=100 color=#0079B9 icon="\uf072" block="飛控"
 namespace drone {
+    // 方向動作相對 1500 的差值
+    let offset = 200
+
     /**
-     * 回傳選定動作對應的指令字串
+     * 設定方向動作的差值（預設 200）。
+     * 例如差值 200：增加油門 = 1700、減少油門 = 1300。
+     * @param d 差值 0~500
+     */
+    //% blockId=drone_set_offset
+    //% block="飛控設定差值 %d"
+    //% d.min=0 d.max=500 d.defl=200
+    //% weight=85
+    export function setOffset(d: number): void {
+        offset = Math.constrain(Math.round(d), 0, 500)
+    }
+
+    /**
+     * 回傳選定動作對應的指令字串。
+     * 方向動作的數值為 1500 ± 差值（用「飛控設定差值」設定，預設 200）。
      * @param cmd 動作
      */
     //% blockId=drone_command_string
     //% block="飛控指令 %cmd"
     //% weight=80
     export function commandString(cmd: DroneCommand): string {
+        const up = "" + (1500 + offset)
+        const dn = "" + (1500 - offset)
         switch (cmd) {
             case DroneCommand.Unlock: return "LEDFFFA000000000000#"
             case DroneCommand.TailLight: return "LED0000FFFA00000000#"
@@ -72,14 +91,14 @@ namespace drone {
             case DroneCommand.StopMotor: return "LED000000000000FFFA#"
             case DroneCommand.StartMotor: return "SRT1500200020001500#"
             case DroneCommand.Hover: return "SRT1500150015001500#"
-            case DroneCommand.ThrottleUp: return "SRT1500170015001500#"
-            case DroneCommand.ThrottleDown: return "SRT1500130015001500#"
-            case DroneCommand.YawLeft: return "SRT1300150015001500#"
-            case DroneCommand.YawRight: return "SRT1700150015001500#"
-            case DroneCommand.PitchForward: return "SRT1500150017001500#"
-            case DroneCommand.PitchBackward: return "SRT1500150013001500#"
-            case DroneCommand.RollLeft: return "SRT1500150015001300#"
-            case DroneCommand.RollRight: return "SRT1500150015001700#"
+            case DroneCommand.ThrottleUp: return "SRT1500" + up + "15001500#"
+            case DroneCommand.ThrottleDown: return "SRT1500" + dn + "15001500#"
+            case DroneCommand.YawLeft: return "SRT" + dn + "150015001500#"
+            case DroneCommand.YawRight: return "SRT" + up + "150015001500#"
+            case DroneCommand.PitchForward: return "SRT15001500" + up + "1500#"
+            case DroneCommand.PitchBackward: return "SRT15001500" + dn + "1500#"
+            case DroneCommand.RollLeft: return "SRT150015001500" + dn + "#"
+            case DroneCommand.RollRight: return "SRT150015001500" + up + "#"
         }
         return ""
     }
@@ -91,7 +110,7 @@ namespace drone {
      * @param value 數值，預設 1500
      */
     //% blockId=drone_axis_string
-    //% block="飛控通道指令 %axis 數值 %value"
+    //% block="飛控指令 %axis 數值 %value"
     //% value.min=1000 value.max=2000 value.defl=1500
     //% weight=75
     export function axisString(axis: DroneAxis, value: number): string {
