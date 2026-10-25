@@ -22,10 +22,29 @@ enum DroneCommand {
     ThrottleUp,
     //% block="減少油門"
     ThrottleDown,
+    //% block="向左偏航"
+    YawLeft,
+    //% block="向右偏航"
+    YawRight,
+    //% block="向前俯衝"
+    PitchForward,
+    //% block="向後仰退"
+    PitchBackward,
     //% block="向左側滾"
     RollLeft,
     //% block="向右側滾"
     RollRight
+}
+
+enum DroneAxis {
+    //% block="升降油門"
+    Throttle,
+    //% block="順逆偏航"
+    Yaw,
+    //% block="前後俯仰"
+    Pitch,
+    //% block="左右側滾"
+    Roll
 }
 
 //% weight=100 color=#0079B9 icon="" block="飛控"
@@ -45,10 +64,34 @@ namespace drone {
             case DroneCommand.StopMotor: return "LED000000000000FFFA#"
             case DroneCommand.StartMotor: return "SRT1500200020001500#"
             case DroneCommand.Hover: return "SRT1500150015001500#"
-            case DroneCommand.ThrottleUp: return "SRT1500150017001500#"
-            case DroneCommand.ThrottleDown: return "SRT1500150013001500#"
+            case DroneCommand.ThrottleUp: return "SRT1500170015001500#"
+            case DroneCommand.ThrottleDown: return "SRT1500130015001500#"
+            case DroneCommand.YawLeft: return "SRT1300150015001500#"
+            case DroneCommand.YawRight: return "SRT1700150015001500#"
+            case DroneCommand.PitchForward: return "SRT1500150017001500#"
+            case DroneCommand.PitchBackward: return "SRT1500150013001500#"
             case DroneCommand.RollLeft: return "SRT1500150015001300#"
             case DroneCommand.RollRight: return "SRT1500150015001700#"
+        }
+        return ""
+    }
+
+    /**
+     * 回傳單一通道指定數值的指令字串，其他通道為 1500
+     * @param axis 通道
+     * @param value 數值 1000~2000，預設 1500
+     */
+    //% blockId=drone_axis_string
+    //% block="飛控通道指令 %axis 數值 %value"
+    //% value.min=1000 value.max=2000 value.defl=1500
+    //% weight=75
+    export function axisString(axis: DroneAxis, value: number): string {
+        const v = "" + Math.constrain(Math.round(value), 1000, 2000)
+        switch (axis) {
+            case DroneAxis.Yaw: return "SRT" + v + "150015001500#"
+            case DroneAxis.Throttle: return "SRT1500" + v + "15001500#"
+            case DroneAxis.Pitch: return "SRT15001500" + v + "1500#"
+            case DroneAxis.Roll: return "SRT150015001500" + v + "#"
         }
         return ""
     }
