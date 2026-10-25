@@ -37,14 +37,22 @@ enum DroneCommand {
 }
 
 enum DroneAxis {
-    //% block="升降油門"
-    Throttle,
-    //% block="順逆偏航"
-    Yaw,
-    //% block="前後俯仰"
-    Pitch,
-    //% block="左右側滾"
-    Roll
+    //% block="增加油門 (1500~2000)"
+    ThrottleUp,
+    //% block="減少油門 (1000~1500)"
+    ThrottleDown,
+    //% block="向左偏航 (1000~1500)"
+    YawLeft,
+    //% block="向右偏航 (1500~2000)"
+    YawRight,
+    //% block="向前俯衝 (1500~2000)"
+    PitchForward,
+    //% block="向後仰退 (1000~1500)"
+    PitchBackward,
+    //% block="向左側滾 (1000~1500)"
+    RollLeft,
+    //% block="向右側滾 (1500~2000)"
+    RollRight
 }
 
 //% weight=100 color=#0079B9 icon="" block="飛控"
@@ -77,21 +85,43 @@ namespace drone {
     }
 
     /**
-     * 回傳單一通道指定數值的指令字串，其他通道為 1500
-     * @param axis 通道
-     * @param value 數值 1000~2000，預設 1500
+     * 回傳單一動作指定數值的指令字串，其他通道為 1500。
+     * 數值會依動作限制在 1000~1500 或 1500~2000。
+     * @param axis 動作
+     * @param value 數值，預設 1500
      */
     //% blockId=drone_axis_string
     //% block="飛控通道指令 %axis 數值 %value"
     //% value.min=1000 value.max=2000 value.defl=1500
     //% weight=75
     export function axisString(axis: DroneAxis, value: number): string {
-        const v = "" + Math.constrain(Math.round(value), 1000, 2000)
+        const n = Math.round(value)
+        let v = ""
         switch (axis) {
-            case DroneAxis.Yaw: return "SRT" + v + "150015001500#"
-            case DroneAxis.Throttle: return "SRT1500" + v + "15001500#"
-            case DroneAxis.Pitch: return "SRT15001500" + v + "1500#"
-            case DroneAxis.Roll: return "SRT150015001500" + v + "#"
+            case DroneAxis.ThrottleUp:
+                v = "" + Math.constrain(n, 1500, 2000)
+                return "SRT1500" + v + "15001500#"
+            case DroneAxis.ThrottleDown:
+                v = "" + Math.constrain(n, 1000, 1500)
+                return "SRT1500" + v + "15001500#"
+            case DroneAxis.YawLeft:
+                v = "" + Math.constrain(n, 1000, 1500)
+                return "SRT" + v + "150015001500#"
+            case DroneAxis.YawRight:
+                v = "" + Math.constrain(n, 1500, 2000)
+                return "SRT" + v + "150015001500#"
+            case DroneAxis.PitchForward:
+                v = "" + Math.constrain(n, 1500, 2000)
+                return "SRT15001500" + v + "1500#"
+            case DroneAxis.PitchBackward:
+                v = "" + Math.constrain(n, 1000, 1500)
+                return "SRT15001500" + v + "1500#"
+            case DroneAxis.RollLeft:
+                v = "" + Math.constrain(n, 1000, 1500)
+                return "SRT150015001500" + v + "#"
+            case DroneAxis.RollRight:
+                v = "" + Math.constrain(n, 1500, 2000)
+                return "SRT150015001500" + v + "#"
         }
         return ""
     }
