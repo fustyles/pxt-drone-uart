@@ -118,7 +118,7 @@ namespace drone {
      */
     //% blockId=drone_url_decode
     //% block="URL 解碼 %s"
-    //% s.defl="SRT1500150015001500%23"
+    //% s.defl=""
     export function urlDecode(s: string): string {
         let out = ""
         let i = 0
