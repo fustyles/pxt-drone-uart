@@ -105,6 +105,7 @@ namespace drone {
     //% blockId=drone_convert_write
     //% block="飛控 轉換並序列輸出 %cmd"
     //% cmd.defl="SRT1500150015001500#"
+    //% color=#002050
     export function convertAndWrite(cmd: string): void {
         let c = trim(cmd)
         // 若讀取時已用 # 分隔而被去掉，補回
