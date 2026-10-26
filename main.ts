@@ -259,6 +259,7 @@ namespace drone {
     //% blockId=drone_url_decode
     //% block="URL 解碼 %s"
     //% s.defl=""
+    //% blockHidden=true
     export function urlDecode(s: string): string {
         let out = ""
         let i = 0
