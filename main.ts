@@ -8,32 +8,16 @@
 enum DroneCommand {
     //% block="解鎖"
     Unlock,
-    //% block="切換尾燈"
+    //% block="尾燈切換"
     TailLight,
-    //% block="切換機身燈"
+    //% block="機身燈切換"
     BodyLight,
-    //% block="停止馬達 (降落後才能用)"
-    StopMotor,
     //% block="啟動馬達"
     StartMotor,
+    //% block="停止馬達(落地後才能用)"
+    StopMotor,
     //% block="懸停"
-    Hover,
-    //% block="增加油門"
-    ThrottleUp,
-    //% block="減少油門"
-    ThrottleDown,
-    //% block="向左偏航"
-    YawLeft,
-    //% block="向右偏航"
-    YawRight,
-    //% block="向前俯衝"
-    PitchForward,
-    //% block="向後仰退"
-    PitchBackward,
-    //% block="向左側滾"
-    RollLeft,
-    //% block="向右側滾"
-    RollRight
+    Hover
 }
 
 enum DroneAxis {
@@ -57,48 +41,21 @@ enum DroneAxis {
 
 //% weight=100 color=#0079B9 icon="\uf072" block="飛控"
 namespace drone {
-    // 方向動作相對 1500 的差值
-    let offset = 200
-
     /**
-     * 設定方向動作的差值（預設 200）。
-     * 例如差值 200：增加油門 = 1700、減少油門 = 1300。
-     * @param d 差值 0~500
-     */
-    //% blockId=drone_set_offset
-    //% block="飛控指令預設數值 %d"
-    //% d.min=0 d.max=500 d.defl=200
-    //% weight=85
-    export function setOffset(d: number): void {
-        offset = Math.constrain(Math.round(d), 0, 500)
-    }
-
-    /**
-     * 回傳選定動作對應的指令字串。
-     * 方向動作的數值為 1500 ± 差值（用「飛控指令預設數值」設定，預設 200）。
+     * 回傳選定動作對應的指令字串
      * @param cmd 動作
      */
     //% blockId=drone_command_string
     //% block="飛控指令 %cmd"
     //% weight=80
     export function commandString(cmd: DroneCommand): string {
-        const up = "" + (1500 + offset)
-        const dn = "" + (1500 - offset)
         switch (cmd) {
             case DroneCommand.Unlock: return "LEDFFFA000000000000#"
             case DroneCommand.TailLight: return "LED0000FFFA00000000#"
             case DroneCommand.BodyLight: return "LED00000000FFFA0000#"
-            case DroneCommand.StopMotor: return "LED000000000000FFFA#"
             case DroneCommand.StartMotor: return "SRT1500200020001500#"
+            case DroneCommand.StopMotor: return "LED000000000000FFFA#"
             case DroneCommand.Hover: return "SRT1500150015001500#"
-            case DroneCommand.ThrottleUp: return "SRT1500" + up + "15001500#"
-            case DroneCommand.ThrottleDown: return "SRT1500" + dn + "15001500#"
-            case DroneCommand.YawLeft: return "SRT" + dn + "150015001500#"
-            case DroneCommand.YawRight: return "SRT" + up + "150015001500#"
-            case DroneCommand.PitchForward: return "SRT15001500" + up + "1500#"
-            case DroneCommand.PitchBackward: return "SRT15001500" + dn + "1500#"
-            case DroneCommand.RollLeft: return "SRT150015001500" + dn + "#"
-            case DroneCommand.RollRight: return "SRT150015001500" + up + "#"
         }
         return ""
     }
