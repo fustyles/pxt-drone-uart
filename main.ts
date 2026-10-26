@@ -68,7 +68,7 @@ namespace drone {
      * @param value 數值 0~500，預設 200
      */
     //% blockId=drone_axis_string
-    //% block="飛控指令 %axis 自訂數值 %value"
+    //% block="飛控指令 %axis 數值 %value"
     //% value.min=0 value.max=500 value.defl=200
     //% weight=75
     export function axisString(axis: DroneAxis, value: number): string {
