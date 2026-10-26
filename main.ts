@@ -66,7 +66,7 @@ namespace drone {
      * @param d 差值 0~500
      */
     //% blockId=drone_set_offset
-    //% block="飛控設定差值 %d"
+    //% block="飛控指令預設數值 %d"
     //% d.min=0 d.max=500 d.defl=200
     //% weight=85
     export function setOffset(d: number): void {
@@ -75,7 +75,7 @@ namespace drone {
 
     /**
      * 回傳選定動作對應的指令字串。
-     * 方向動作的數值為 1500 ± 差值（用「飛控設定差值」設定，預設 200）。
+     * 方向動作的數值為 1500 ± 差值（用「飛控指令預設數值」設定，預設 200）。
      * @param cmd 動作
      */
     //% blockId=drone_command_string
@@ -111,7 +111,7 @@ namespace drone {
      * @param value 數值 0~500，預設 200
      */
     //% blockId=drone_axis_string
-    //% block="飛控指令 %axis 數值 %value"
+    //% block="飛控指令 %axis 自訂數值 %value"
     //% value.min=0 value.max=500 value.defl=200
     //% weight=75
     export function axisString(axis: DroneAxis, value: number): string {
