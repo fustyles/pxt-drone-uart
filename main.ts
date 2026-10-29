@@ -14,8 +14,6 @@ enum DroneCommand {
     BodyLight,
     //% block="啟動馬達"
     StartMotor,
-    //% block="停止馬達(落地後才能用)"
-    StopMotor,
     //% block="懸停"
     Hover
 }
@@ -54,7 +52,6 @@ namespace drone {
             case DroneCommand.TailLight: return "LED0000FFFA00000000#"
             case DroneCommand.BodyLight: return "LED00000000FFFA0000#"
             case DroneCommand.StartMotor: return "SRT1500200020001500#"
-            case DroneCommand.StopMotor: return "LED000000000000FFFA#"
             case DroneCommand.Hover: return "SRT1500150015001500#"
         }
         return ""
@@ -86,6 +83,43 @@ namespace drone {
             case DroneAxis.RollRight: return "SRT150015001500" + up + "#"
         }
         return ""
+    }
+
+    /**
+     * 降落停機：先送出油門 1400 緩降，經過指定秒數後再停止馬達。
+     * 秒數要足夠讓飛機落地，否則會在空中停機。
+     * @param seconds 緩降持續秒數，預設 10
+     */
+    //% blockId=drone_landing
+    //% block="飛控降落停機 持續秒數 %seconds"
+    //% seconds.min=0 seconds.defl=10
+    //% weight=70
+    export function landing(seconds: number): void {
+        convertAndWrite("SRT1500140015001500#")
+        basic.pause(Math.max(0, seconds) * 1000)
+        convertAndWrite("LED000000000000FFFA#")
+    }
+
+    /**
+     * 依比率移動指定距離，到達後自動懸停。
+     * 比率 = 實測距離(cm) ÷ 花費秒數，例如數值 200 時 2 秒移動 100 cm，比率 = 50。
+     * 移動時間(秒) = 距離 ÷ 比率。
+     * @param axis 動作
+     * @param value 數值 0~500，預設 200
+     * @param ratio 比率 (cm/秒)，預設 50
+     * @param distance 距離 (cm)，預設 100
+     */
+    //% blockId=drone_move_distance
+    //% block="飛控指令 %axis 數值 %value 比率 %ratio 距離(cm) %distance"
+    //% value.min=0 value.max=500 value.defl=200
+    //% ratio.defl=50 distance.defl=100
+    //% inlineInputMode=inline
+    //% weight=65
+    export function moveDistance(axis: DroneAxis, value: number, ratio: number, distance: number): void {
+        if (!(ratio > 0) || !(distance > 0)) return
+        convertAndWrite(axisString(axis, value))
+        basic.pause(Math.round(distance / ratio * 1000))
+        convertAndWrite("SRT1500150015001500#")
     }
 
     // 對應原 Arduino 程式的 tcpReciveData[0..3] 與 ctrbuff[0..3]，狀態會保留
@@ -145,10 +179,16 @@ namespace drone {
     export function convertAndWrite(cmd: string): void {
         let c = trim(cmd)
         // 若讀取時已用 # 分隔而被去掉，補回
-        if (c.length == 19) c = c + "#"
+        if (c.length == 19 && c.charAt(18) != "#") c = c + "#"
         if (c.length != 20 || c.charAt(19) != "#") return
 
         const head = c.substr(0, 3)
+        // 中間 16 個字元必須全部是合法數字，否則整筆忽略
+        for (let i = 3; i < 19; i++) {
+            const ch = c.charCodeAt(i)
+            if (head == "SRT" && !(ch >= 48 && ch <= 57)) return
+            if (head == "LED" && hexDigit(ch) < 0) return
+        }
         if (head == "LED") {
             for (let i = 0; i < 4; i++)
                 ctrbuff[i] = mapByte(hexToInt(c.substr(3 + i * 4, 4)), 0, 65530)
