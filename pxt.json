@@ -1,6 +1,6 @@
 {
     "name": "drone-uart",
-    "version": "0.1.8",
+    "version": "0.1.9",
     "description": "飛控封包轉換積木（作者：法蘭斯）",
     "dependencies": {
         "core": "*"

@@ -14,6 +14,8 @@ enum DroneCommand {
     BodyLight,
     //% block="啟動馬達"
     StartMotor,
+    //% block="停止馬達(落地後才能用)"
+    StopMotor,
     //% block="懸停"
     Hover
 }
@@ -52,6 +54,7 @@ namespace drone {
             case DroneCommand.TailLight: return "LED0000FFFA00000000#"
             case DroneCommand.BodyLight: return "LED00000000FFFA0000#"
             case DroneCommand.StartMotor: return "SRT1500200020001500#"
+            case DroneCommand.StopMotor: return "LED000000000000FFFA#"
             case DroneCommand.Hover: return "SRT1500150015001500#"
         }
         return ""
